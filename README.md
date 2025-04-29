@@ -1,12 +1,6 @@
-# bhvr 🦫
+# MDX Multi Editor
 
-![cover](https://cdn.stevedylan.dev/ipfs/bafybeievx27ar5qfqyqyud7kemnb5n2p4rzt2matogi6qttwkpxonqhra4)
-
-A full-stack TypeScript monorepo starter with shared types, using Bun, Hono, Vite, and React
-
-## Why bhvr?
-
-While there are plenty of existing app building stacks out there, many of them are either bloated, outdated, or have too much of a vendor lock-in. bhvr is built with the opinion that you should be able to deploy your client or server in any enviorment while also keeping type saftey.
+A full-stack MDX Multi Editor with shared types, using Bun, Hono, Vite, and React
 
 ## Features
 
@@ -33,12 +27,6 @@ While there are plenty of existing app building stacks out there, many of them a
 ## Getting Started
 
 ### Quick Start
-
-You can start a new bhvr project using the [CLI](https://github.com/stevedylandev/create-bhvr)
-
-```bash
-bun create bhvr
-```
 
 ### Installation
 
