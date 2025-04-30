@@ -86,15 +86,17 @@ export function splitMergedMDXContentWithAST(mergedContent: string, directory: s
       });
 
     // Calculate the directory path with the file path
-    let filePath = '';
+    let filePath = currentDivider.filePath
+    let filePathNoDot = currentDivider.filePath.match(/^\.[/\\]/) ? filePath.substring(2) : filePath;
     if (os.platform() === 'win32') {
-      filePath = `${directory}\\${currentDivider.filePath.replace(/\//g, '\\')}`;
+      const filePathWin = filePathNoDot.replace(/\//g, '\\');
+      filePath = `${directory}\\${filePathWin}`;
     } else {
       filePath = `${directory}/${currentDivider.filePath}`;
     }
 
     fileUpdates.push({
-      path: currentDivider.filePath,
+      path: filePath,
       content: fileContent.trim()
     });
   }
@@ -122,9 +124,20 @@ export function splitMergedMDXContentWithRegex(mergedContent: string, directory:
       continue;
     }
 
+    // Calculate the directory path with the file path
+    let filePath = match[2];
+    let filePathNoDot = filePath.match(/^\.[/\\]/) ? filePath.substring(
+      2) : filePath;
+    if (os.platform() === 'win32') {
+      const filePathWin = filePathNoDot.replace(/\//g, '\\');
+      filePath = `${directory}\\${filePathWin}`;
+    } else {
+      filePath = `${directory}/${filePath}`;
+    }
+
     matches.push({
       index: match.index,
-      filePath: match[2] // The file path is now in capture group 2
+      filePath: filePath
     });
   }
 

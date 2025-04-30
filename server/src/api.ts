@@ -141,12 +141,7 @@ app.post('/api/mdx', async (c) => {
     const results: FileUpdateResult[] = await Promise.all(fileUpdates.map(async (update) => {
       try {
         // Normalize the path
-        let filePath = update.path;
-        if (filePath.startsWith('./')) {
-          filePath = filePath.substring(2);
-        }
-
-        const fullPath = path.join(directory, filePath);
+        let fullPath = update.path;
 
         // Create the directory if it doesn't exist
         const dirPath = path.dirname(fullPath);
@@ -155,7 +150,7 @@ app.post('/api/mdx', async (c) => {
         }
 
         // Write the file
-        console.log(`Writing file ${fullPath} (filePath: ${filePath})`);
+        console.log(`Writing file ${fullPath}`);
         fs.writeFileSync(fullPath, update.content);
 
         const result: FileUpdateResult = {
