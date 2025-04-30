@@ -49,11 +49,6 @@ export function Editor({ isLoading, currentMdxContent, mdxContent, handleMdxChan
       ) : (
         <div className="p-0 sm:p-0 md:p-0 lg:p-0">
           <div className="relative">
-            {/* Error message for parsing issues */}
-            <div className="mb-2 text-sm text-amber-600 bg-amber-50 p-2 rounded">
-              <p>If you encounter parsing errors, try using the source mode by clicking the "Source" button in the toolbar.</p>
-            </div>
-
             <MDXEditor
               ref={editorRef}
               markdown={currentMdxContent}
