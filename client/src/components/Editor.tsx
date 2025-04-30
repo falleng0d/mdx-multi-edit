@@ -1,43 +1,17 @@
-import {
-  MDXEditor,
-  headingsPlugin,
-  listsPlugin,
-  quotePlugin,
-  thematicBreakPlugin,
-  linkPlugin,
-  markdownShortcutPlugin,
-  codeBlockPlugin,
-  diffSourcePlugin,
-  toolbarPlugin,
-  type MDXEditorMethods,
-  DiffSourceToggleWrapper,
-  codeMirrorPlugin,
-  InsertThematicBreak,
-} from '@mdxeditor/editor'
-import { UndoRedo, BoldItalicUnderlineToggles, BlockTypeSelect, CreateLink, InsertCodeBlock } from '@mdxeditor/editor'
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
+import MDEditor from '@uiw/react-md-editor'
+import '@uiw/react-md-editor/markdown-editor.css'
 
 interface EditorProps {
   isLoading: boolean
   currentMdxContent: string
-  mdxContent: string
   handleMdxChange: (content: string) => void
-  editorRef: React.RefObject<MDXEditorMethods | null>
 }
 
-export function Editor({ isLoading, currentMdxContent, mdxContent, handleMdxChange, editorRef }: EditorProps) {
-  // Handle editor error by switching to source mode
-  const handleEditorError = useCallback(() => {
-    if (editorRef.current) {
-      try {
-        // Try to switch to source mode if rich text mode fails
-        console.log('Switching to source mode due to parsing error')
-        editorRef.current.setMarkdown(mdxContent)
-      } catch (err) {
-        console.error('Error handling editor error:', err)
-      }
-    }
-  }, [mdxContent, editorRef])
+export function Editor({ isLoading, currentMdxContent, handleMdxChange }: EditorProps) {
+  const handleChange = useCallback((value?: string) => {
+    if (value !== undefined) handleMdxChange(value);
+  }, [handleMdxChange]);
 
   return (
     <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
@@ -49,40 +23,14 @@ export function Editor({ isLoading, currentMdxContent, mdxContent, handleMdxChan
       ) : (
         <div className="p-0 sm:p-0 md:p-0 lg:p-0">
           <div className="relative">
-            <MDXEditor
-              ref={editorRef}
-              markdown={currentMdxContent}
-              onChange={handleMdxChange}
-              contentEditableClassName="prose dark:prose-invert max-w-none p-4 min-h-[60vh] focus:outline-none"
-              plugins={[
-                headingsPlugin(),
-                listsPlugin(),
-                quotePlugin(),
-                thematicBreakPlugin(),
-                linkPlugin(),
-                markdownShortcutPlugin(),
-                codeBlockPlugin({ defaultCodeBlockLanguage: 'js' }),
-                codeMirrorPlugin({ codeBlockLanguages: { js: 'JavaScript', css: 'CSS' } }),
-                diffSourcePlugin({
-                  viewMode: 'source',  // Start in source mode to avoid parsing errors
-                  diffMarkdown: mdxContent
-                }),
-                toolbarPlugin({
-                  toolbarContents: () => (
-                    <>
-                      <DiffSourceToggleWrapper>
-                        <BlockTypeSelect />
-                        <CreateLink />
-                        <InsertCodeBlock />
-                        <InsertThematicBreak />
-                        <UndoRedo/>
-                        <BoldItalicUnderlineToggles/>
-                      </DiffSourceToggleWrapper>
-                    </>
-                  )
-                })
-              ]}
-              onError={handleEditorError}
+            <MDEditor
+              value={currentMdxContent}
+              onChange={handleChange}
+              height="60vh"
+              preview="edit"
+              highlightEnable={true}
+              className="min-h-[60vh]"
+              visibleDragbar={true}
             />
           </div>
         </div>

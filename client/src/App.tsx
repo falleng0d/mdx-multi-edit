@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { type MDXEditorMethods } from '@mdxeditor/editor'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { StatusBar } from './components/StatusBar'
@@ -16,9 +15,7 @@ function App() {
 }
 
 function MdxEditor() {
-  const editorRef = useRef<MDXEditorMethods | null>(null)
   const [currentMdxContent, setCurrentMdxContent] = useState<string>('')
-  const [isFreshCurrentMdxContent, setIsFreshCurrentMdxContent] = useState<boolean>(true)
 
   const {
     mdxContent, isLoading, error: queryError, refetch,
@@ -26,12 +23,7 @@ function MdxEditor() {
 
   const {
     saveSuccess, saveMessage, isSaving, error: mutationError, saveMdxContent,
-  } = useSaveMDX(mdxContent)
-
-  const setMdxContent = useCallback(() => {
-    saveMdxContent()
-    setIsFreshCurrentMdxContent(false);
-  }, [saveMdxContent])
+  } = useSaveMDX(currentMdxContent)
 
   // Combine errors from query and mutation
   const error = queryError || mutationError
@@ -53,26 +45,17 @@ function MdxEditor() {
 
   // Update editor content when data is fetched
   useEffect(() => {
-    if (editorRef.current && mdxContent) {
-      if (!isFreshCurrentMdxContent && !isLoading && !isSaving && saveSuccess) {
-        setCurrentMdxContent(mdxContent)
-        setIsFreshCurrentMdxContent(true)
-      }
-
-      try {
-        editorRef.current.setMarkdown(mdxContent)
-      } catch (err) {
-        console.error('Error setting markdown content:', err)
-      }
+    if (mdxContent && !isLoading && !isSaving) {
+      setCurrentMdxContent(mdxContent)
     }
-  }, [isFreshCurrentMdxContent, isLoading, isSaving, mdxContent, saveSuccess])
+  }, [isLoading, isSaving, mdxContent, saveSuccess])
 
   return (<div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
     <Header
       isLoading={isLoading}
       isSaving={isSaving}
       refetch={refetch}
-      saveMdxContent={setMdxContent}
+      saveMdxContent={saveMdxContent}
     />
 
     <main className="flex-grow">
@@ -86,9 +69,7 @@ function MdxEditor() {
         <Editor
           isLoading={isLoading}
           currentMdxContent={currentMdxContent}
-          mdxContent={mdxContent}
           handleMdxChange={setCurrentMdxContent}
-          editorRef={editorRef}
         />
 
         <Instructions/>

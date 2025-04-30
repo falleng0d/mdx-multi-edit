@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import fs from 'fs';
 import path from 'path';
+import { glob } from 'glob';
 import { mergeMdxDirectory } from './mdx-merger.js';
 import { splitMergedMDXContent } from "server/src/mdx-splitter.js";
 import type {
@@ -36,6 +37,35 @@ app.use(async (c, next) => {
 });
 
 app.use('*', cors());
+
+/**
+ * Delete all MDX files in a directory
+ * @param directory The directory to delete MDX files from
+ * @returns Promise that resolves to an array of deleted file paths
+ */
+async function deleteExistingMdxFiles(directory: string): Promise<string[]> {
+  try {
+    const mdxFiles = await glob(`${directory}/**/*.{md,mdx}`, {
+      ignore: ['**/node_modules/**', '**/dist/**']
+    });
+
+    const deletedFiles: string[] = [];
+    for (const file of mdxFiles) {
+      try {
+        fs.unlinkSync(file);
+        deletedFiles.push(file);
+        console.log(`Deleted file: ${file}`);
+      } catch (error) {
+        console.error(`Error deleting file ${file}:`, error);
+      }
+    }
+
+    return deletedFiles;
+  } catch (error) {
+    console.error('Error deleting MDX files:', error);
+    return [];
+  }
+}
 
 app.get('/', (c) => {
   const response: RootResponse = {
@@ -102,6 +132,11 @@ app.post('/api/mdx', async (c) => {
       return c.json(errorResponse, 400);
     }
 
+    // Delete existing MDX files before writing new ones
+    console.log(`Deleting existing MDX files in ${directory}`);
+    const deletedFiles = await deleteExistingMdxFiles(directory);
+    console.log(`Deleted ${deletedFiles.length} MDX files`);
+
     // Write each file to disk
     const results: FileUpdateResult[] = await Promise.all(fileUpdates.map(async (update) => {
       try {
@@ -113,13 +148,14 @@ app.post('/api/mdx', async (c) => {
 
         const fullPath = path.join(directory, filePath);
 
-        // Create directory if it doesn't exist
+        // Create the directory if it doesn't exist
         const dirPath = path.dirname(fullPath);
         if (!fs.existsSync(dirPath)) {
           fs.mkdirSync(dirPath, { recursive: true });
         }
 
         // Write the file
+        console.log(`Writing file ${fullPath} (filePath: ${filePath})`);
         fs.writeFileSync(fullPath, update.content);
 
         const result: FileUpdateResult = {

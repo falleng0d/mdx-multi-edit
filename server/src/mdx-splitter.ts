@@ -2,7 +2,6 @@ import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkStringify from 'remark-stringify'
 import remarkMdx from 'remark-mdx'
-import type { Root } from 'mdast'
 import type { FileUpdate } from 'shared/dist'
 
 /**
@@ -21,7 +20,7 @@ export function splitMergedMDXContentWithAST(mergedContent: string): FileUpdate[
   const tree = unified()
     .use(remarkParse)
     .use(remarkMdx)
-    .parse(mergedContent) as Root;
+    .parse(mergedContent);
 
   // Find all file dividers in the document
   const fileDividers: FileDivider[] = [];
@@ -40,7 +39,7 @@ export function splitMergedMDXContentWithAST(mergedContent: string): FileUpdate[
     if (currentNode.type === 'thematicBreak' && nextNode.type === 'paragraph') {
       const paragraph = nextNode as any;
 
-      // Check if paragraph contains a link that points to an MDX file
+      // Check if the paragraph contains a link that points to an MDX file
       if (paragraph.children && paragraph.children.length > 0) {
         const firstChild = paragraph.children[0];
         if (firstChild.type === 'link' &&
@@ -77,17 +76,13 @@ export function splitMergedMDXContentWithAST(mergedContent: string): FileUpdate[
     // Extract nodes for this file
     const fileNodes = tree.children.slice(startIndex, endIndex);
 
-    // Create a new AST for this file
-    const fileTree: Root = {
-      type: 'root',
-      children: fileNodes
-    };
-
-    // Convert the AST back to markdown
+    // Convert the AST back to Markdown
     const fileContent = unified()
       .use(remarkStringify)
       .use(remarkMdx)
-      .stringify(fileTree);
+      .stringify({
+        type: 'root', children: fileNodes
+      });
 
     fileUpdates.push({
       path: currentDivider.filePath,

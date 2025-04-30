@@ -12,7 +12,8 @@ export async function findMdxFiles(directory: string): Promise<string[]> {
   try {
     // Use glob to find all .md and .mdx files
     return await glob(`${directory}/**/*.{md,mdx}`, {
-      ignore: ['**/node_modules/**', '**/dist/**']
+      ignore: ['**/node_modules/**', '**/dist/**'],
+      absolute: true
     });
   } catch (error) {
     console.error('Error finding MDX files:', error);
@@ -43,31 +44,29 @@ export function readMdxFile(filePath: string): MdxFile {
 
 /**
  * Create a file link for the merged content
- * @param filePath Path to the file
+ * @param absFilePath Absolute path to the file
+ * @param directory Base directory to make paths relative to
  * @returns Formatted file link
  */
-export function createFileLink(filePath: string): string {
-  // Convert absolute path to relative path if needed
-  let relativePath = filePath;
-  if (path.isAbsolute(filePath)) {
-    relativePath = `./${path.relative(process.cwd(), filePath)}`;
-  } else if (!relativePath.startsWith('./')) {
-    relativePath = `./${relativePath}`;
-  }
+export function createFileLink(absFilePath: string, directory: string): string {
+  // Convert an absolute path to a relative path if needed
+  let relativePath = absFilePath;
+  relativePath = `./${path.relative(directory, absFilePath)}`;
 
   // Get the file name without extension for the link text
-  const fileName = path.basename(filePath, path.extname(filePath));
+  const fileName = path.basename(absFilePath, path.extname(absFilePath));
 
   return `[${fileName}](${relativePath.replace(/\\/g, '/')})`;
 }
 
 /**
  * Merge multiple MDX files into a single string
- * @param files Array of MDX files
+ * @param files Array of MDX files with absolute paths
+ * @param directory Absolute base directory to make paths relative to
  * @returns Merged content string
  */
-export function mergeMdxFiles(files: MdxFile[]): string {
-  // Sort files by path to ensure consistent ordering
+export function mergeMdxFiles(files: MdxFile[], directory: string): string {
+  // Sort files by a path to ensure consistent ordering
   const sortedFiles = [...files].sort((a, b) => a.path.localeCompare(b.path));
 
   // Build the merged content
@@ -76,7 +75,7 @@ export function mergeMdxFiles(files: MdxFile[]): string {
   for (const file of sortedFiles) {
     // Add a divider and file link
     mergedContent += '---\n';
-    mergedContent += `${createFileLink(file.path)}\n\n`;
+    mergedContent += `${createFileLink(file.path, directory)}\n\n`;
 
     // Add file content
     mergedContent += `${file.content.trim()}\n\n`;
@@ -94,26 +93,26 @@ export function mergeMdxFiles(files: MdxFile[]): string {
 export async function mergeMdxDirectory(directory: string, outputPath?: string): Promise<string> {
   try {
     // Find all MDX files
-    const filePaths = await findMdxFiles(directory);
+    const absFilePaths = await findMdxFiles(directory);
 
-    if (filePaths.length === 0) {
+    if (absFilePaths.length === 0) {
       console.warn(`No MDX files found in ${directory}`);
       return '';
     }
 
-    console.log(`Found ${filePaths.length} MDX files in ${directory}`);
+    console.log(`Found ${absFilePaths.length} MDX files in ${directory}`);
 
     // Read all files
-    const files = filePaths.map(filePath => readMdxFile(filePath));
+    const files = absFilePaths.map(filePath => readMdxFile(filePath));
 
     // Merge files
-    const mergedContent = mergeMdxFiles(files);
+    const mergedContent = mergeMdxFiles(files, directory);
 
-    // Write to output file if specified
+    // Write to the output file if specified
     if (outputPath) {
       const outputDir = path.dirname(outputPath);
 
-      // Create output directory if it doesn't exist
+      // Create the output directory if it doesn't exist
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
       }
