@@ -15,7 +15,10 @@ export function Instructions() {
               Files are displayed with headers that indicate their path. For example:
             </p>
             <pre className="bg-gray-100 dark:bg-gray-700 p-2 rounded">
-              <code>## [intro](./docs/intro.mdx)</code>
+              <code>
+                ---<br/>
+                [intro](./docs/intro.mdx)
+              </code>
             </pre>
             <p>Edit the content below each file header. When you save, changes will be written to the appropriate files.</p>
 
