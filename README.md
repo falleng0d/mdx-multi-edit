@@ -25,13 +25,13 @@ A full-stack MDX Multi Editor with shared types, using Bun, Hono, Vite, and Reac
 ```
 .
 ├── client/               # React frontend
-├── server/           [README.md](../mdx-multi-edit/README.md)    # Hono backend
+├── server/               # Hono backend
 ├── shared/               # Shared TypeScript definitions
 │   └── src/types/        # Type definitions used by both client and server
 └── package.json          # Root package.json with workspaces
 ```
 
-## Getting Started[README.md](../mdx-multi-edit/README.md)
+## Getting Started
 
 ### Quick Start
 

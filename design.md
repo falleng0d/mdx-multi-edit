@@ -45,7 +45,7 @@ Saves the changes to the file system
 The application consists of two main parts:
 
 - **Frontend:** A React application for editing MDX files in the browser.
-- **Backend:** An Express server that exposes API endpoints for reading and writing MDX
+- **Backend:** A Hono server that exposes API endpoints for reading and writing MDX
   files on disk.
 
 Both are started together with `concurrently` for a seamless development experience.
