@@ -123,7 +123,7 @@ app.post('/api/mdx', async (c) => {
     }
 
     // Split the merged content back into individual files
-    const fileUpdates = splitMergedMDXContent(content);
+    const fileUpdates = splitMergedMDXContent(content, directory);
 
     if (fileUpdates.length === 0) {
       const errorResponse: ApiErrorResponse = {

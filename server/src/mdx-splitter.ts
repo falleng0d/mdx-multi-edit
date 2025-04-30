@@ -3,6 +3,7 @@ import remarkParse from 'remark-parse'
 import remarkStringify from 'remark-stringify'
 import remarkMdx from 'remark-mdx'
 import type { FileUpdate } from 'shared/dist'
+import * as os from "node:os";
 
 /**
  * Represents a file divider with path and position in the AST
@@ -15,7 +16,7 @@ interface FileDivider {
 /**
  * Parses merged MDX content and split it into individual files using AST
  */
-export function splitMergedMDXContentWithAST(mergedContent: string): FileUpdate[] {
+export function splitMergedMDXContentWithAST(mergedContent: string, directory: string): FileUpdate[] {
   // Parse the merged content into an AST
   const tree = unified()
     .use(remarkParse)
@@ -84,6 +85,14 @@ export function splitMergedMDXContentWithAST(mergedContent: string): FileUpdate[
         type: 'root', children: fileNodes
       });
 
+    // Calculate the directory path with the file path
+    let filePath = '';
+    if (os.platform() === 'win32') {
+      filePath = `${directory}\\${currentDivider.filePath.replace(/\//g, '\\')}`;
+    } else {
+      filePath = `${directory}/${currentDivider.filePath}`;
+    }
+
     fileUpdates.push({
       path: currentDivider.filePath,
       content: fileContent.trim()
@@ -96,7 +105,7 @@ export function splitMergedMDXContentWithAST(mergedContent: string): FileUpdate[
 /**
  * Fallback regex-based parser for when AST parsing fails
  */
-export function splitMergedMDXContentWithRegex(mergedContent: string): FileUpdate[] {
+export function splitMergedMDXContentWithRegex(mergedContent: string, directory: string): FileUpdate[] {
   const fileUpdates: FileUpdate[] = [];
 
   // Regex to match file dividers
@@ -150,14 +159,14 @@ export function splitMergedMDXContentWithRegex(mergedContent: string): FileUpdat
 /**
  * Parses merged MDX content and split it into individual files
  */
-export function splitMergedMDXContent(mergedContent: string): FileUpdate[] {
+export function splitMergedMDXContent(mergedContent: string, directory: string): FileUpdate[] {
   try {
-    return splitMergedMDXContentWithAST(mergedContent);
+    return splitMergedMDXContentWithAST(mergedContent, directory);
   } catch (error) {
     console.error('[splitMergedMDXContent] Failed to parse MDX content with AST parser:', error);
     try {
       // Fall back to regex-based parsing
-      return splitMergedMDXContentWithRegex(mergedContent);
+      return splitMergedMDXContentWithRegex(mergedContent, directory);
     } catch (fallbackError) {
       console.error('[splitMergedMDXContent] Failed to parse MDX content with fallback parser:', fallbackError);
       return [];
