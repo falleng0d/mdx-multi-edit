@@ -5,10 +5,19 @@
     "dev": "bun run --hot src/index.ts"
   },
   "dependencies": {
-    "hono": "^4.7.7",
-    "shared": "workspace:*"
+    "@hono/node-server": "^1.14.1",
+    "commander": "^13.1.0",
+    "glob": "^11.0.2",
+    "hono": "^4.7.8",
+    "mdast": "^3.0.0",
+    "remark-mdx": "^3.1.0",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "shared": "workspace:*",
+    "unified": "^11.0.5"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "vitest": "^3.1.2"
   }
 }
