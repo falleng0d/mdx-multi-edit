@@ -1,3 +1,6 @@
+// This component is no longer used as we've moved to toast notifications
+// Keeping it as a reference in case we need to revert or use parts of it later
+
 interface StatusBarProps {
   error: Error | null
   saveSuccess: boolean

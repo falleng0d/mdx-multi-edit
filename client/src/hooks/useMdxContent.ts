@@ -34,7 +34,7 @@ async function postMdxContent(content: string): Promise<PostMdxResponse> {
   return await response.json()
 }
 
-export function useQueryMDX() {
+export const useQueryMDX = () => {
   const [mdxContent, setMdxContent] = useState<string>('')
 
   const {
@@ -45,7 +45,6 @@ export function useQueryMDX() {
   } = useQuery<GetMdxResponse>({
     queryKey: ['mdxContent'],
     queryFn: getMdxContent,
-    staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false
   })
 
@@ -67,36 +66,25 @@ export function useQueryMDX() {
     error: queryError,
     refetch,
   }
-}
+};
 
 export function useSaveMDX(mdxContent: string) {
-  const [saveSuccess, setSaveSuccess] = useState<boolean>(false)
-  const [saveMessage, setSaveMessage] = useState<string>('')
   const queryClient = useQueryClient()
 
   // Save MDX content to the server using React Query mutation
-  const { mutate: saveMutation, isPending: isSaving, error: mutationError } = useMutation<PostMdxResponse>({
+  const { mutate: saveMutation, isPending: isSaving, error: mutationError, data } = useMutation({
     mutationFn: () => postMdxContent(mdxContent),
     onSuccess: (data) => {
-      setSaveSuccess(true)
-      setSaveMessage(`Successfully saved ${data.files.length} file(s)`)
-
-      // Show a success message for 3 seconds
-      setTimeout(() => {
-        setSaveSuccess(false)
-        setSaveMessage('')
-      }, 3000)
-
       // Invalidate and refetch
       void queryClient.invalidateQueries({ queryKey: ['mdxContent'] })
+      return data
     }
   })
 
   return {
-    saveSuccess,
-    saveMessage,
     isSaving,
     error: mutationError,
-    saveMdxContent: saveMutation
+    saveMdxContent: saveMutation,
+    data
   }
 }
