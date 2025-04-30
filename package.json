@@ -14,7 +14,7 @@
     "dev:client": "cd client && bun run dev",
     "dev:server": "cd server && bun run dev --port 3000 --directory ./test/sample",
     "dev:shared": "cd shared && bun run dev",
-    "dev": "bun run dev:shared & bun run dev:server & bun run dev:client",
+    "dev": "concurrently --kill-others -p \"[{name}]\" -n \"SERVER,CLIENT,SHARED\" -c \"auto\" \"npm run dev:server\" \"npm run dev:client\" \"npm run dev:shared\"",
     "build:client": "cd client && bun run build",
     "build:shared": "cd shared && bun run build",
     "build": "bun run build:shared && bun run build:client",
@@ -28,7 +28,8 @@
     "monorepo"
   ],
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "concurrently": "^9.1.2"
   },
   "peerDependencies": {
     "typescript": "^5"
