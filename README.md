@@ -1,13 +1,24 @@
-# MDX Multi Editor
+# MDX Multi Edit
 
-A full-stack MDX Multi Editor with shared types, using Bun, Hono, Vite, and React
+A full-stack MDX Multi Editor with shared types, using Bun, Hono, Vite, and React.
+
+Basically a simple MDX editor that can be used to edit multiple MDX files at once
+as if they were a single file. It uses a custom parser to handle the MDX content and
+allows for easy editing and previewing of the content.
+
+The server can be run on a specific directory to load MDX files from. The default is
+`./test/sample`.
+
+e.g. `bun run dev --port 3000 --directory ./test/sample`
 
 ## Features
 
 - AST-based parsing for robust handling of MDX content
 - Fallback regex-based parsing when AST parsing fails
-- Command-line interface for processing files 
+- Command-line interface for processing files
 - Programmatic API for integration with other tools
+
+![pic](pic.png)
 
 ## Project Overview
 
@@ -67,22 +78,26 @@ bun run build:client  # Build the React frontend
 
 ### Deployment
 
-Deplying each piece is very versatile and can be done numerous ways, and exploration into automating these will happen at a later date. Here are some references in the meantime.
+Deplying each piece is very versatile and can be done numerous ways, and exploration into
+automating these will happen at a later date. Here are some references in the meantime.
 
 **Client**
+
 - [Orbiter](https://orbiter.host)
 - [GitHub Pages](https://vite.dev/guide/static-deploy.html#github-pages)
 - [Netlify](https://vite.dev/guide/static-deploy.html#netlify)
 - [Cloudflare Pages](https://vite.dev/guide/static-deploy.html#cloudflare-pages)
 
 **Server**
+
 - [Cloudflare Worker](https://gist.github.com/stevedylandev/4aa1fc569bcba46b7169193c0498d0b3)
 - [Bun](https://hono.dev/docs/getting-started/bun)
 - [Node.js](https://hono.dev/docs/getting-started/nodejs)
 
 ## Type Sharing
 
-Types are automatically shared between the client and server thanks to the shared package and TypeScript path aliases. You can import them in your code using:
+Types are automatically shared between the client and server thanks to the shared package
+and TypeScript path aliases. You can import them in your code using:
 
 ```typescript
 import { ApiResponse } from '@shared/types';
