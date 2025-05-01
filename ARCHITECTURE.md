@@ -5,7 +5,7 @@
 MDX Multi Edit is a web application that allows users to edit multiple MDX files at once
 as if they were a single file.
 
-The application is built with a React frontend and an Express backend, both written in
+The application is built with a React frontend and a Hono backend, both written in
 TypeScript. The backend server handles saving changes to the file system and serving API
 endpoints, while the frontend provides a simple editor for users to edit files.
 
