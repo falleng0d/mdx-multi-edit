@@ -120,7 +120,7 @@ Below outlines both.
         - `path` (e.g. `./docs/intro.mdx`)
 
 2. **Split sections**
-    - Scan the merged markdown from top to bottom, finding each file divider match.
+    - Scan the merged Markdown from top to bottom, finding each file divider match.
     - For each match, record its `index` in the text, and `path`.
     - After collecting all dividers, slice the text between the end of the file link line
       and the next divider (or EOF for the last one).
@@ -193,6 +193,6 @@ Below outlines both.
 
 ---
 
-With this design, frontend simply hands the merged string to the backend. The backend runs
+With this design, the frontend simply hands the merged string to the backend. The backend runs
 one of the above parsers, writes each file, and returns a summary of saved paths or
 errors.
