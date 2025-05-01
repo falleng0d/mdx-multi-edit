@@ -1,10 +1,10 @@
 {
-  "name": "mdx-merge-edit",
+  "name": "mdx-multi-edit",
   "version": "0.1.0",
-  "description": "A monorepo template built with Bun, Hono, Vite, and React",
-  "author": "Steve Simkins",
+  "description": "MDX Multi Edit is a web application that allows users to edit multiple MDX files at once\nas if they were a single file.",
+  "author": "Mateus Junior",
   "license": "MIT",
-  "homepage": "https://github.com/stevedylandev/bhvr",
+  "homepage": "https://github.com/falleng0d/mdx-multi-edit",
   "workspaces": [
     "./server",
     "./client",
